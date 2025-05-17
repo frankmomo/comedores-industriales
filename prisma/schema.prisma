@@ -1,0 +1,68 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  password  String
+  role      Role     @default(USER)
+  menus     Menu[]   @relation("UserMenus") // ← nombre de relación explícito
+  createdAt DateTime @default(now())
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum WeekDay {
+  MON
+  TUE
+  WED
+  THU
+  FRI
+}
+
+enum DishGroup {
+  BREAKFAST_MAIN // Desayuno opción 1 u 2
+  LUNCH_MAIN // Comida   opción 1 u 2
+  COMPLEMENT // Acompaña a desayuno y comida
+  CONSUME // Solo comida
+  DESSERT // Solo comida
+}
+
+model Menu {
+  id        String    @id @default(cuid())
+  week      Int
+  year      Int
+  days      DayMenu[]
+  authorId  String
+  author    User      @relation("UserMenus", fields: [authorId], references: [id]) // ← debe coincidir
+  createdAt DateTime  @default(now())
+}
+
+model DayMenu {
+  id     String  @id @default(cuid())
+  day    WeekDay
+  menuId String
+  menu   Menu    @relation(fields: [menuId], references: [id])
+  dishes Dish[]
+
+  @@unique([menuId, day])
+}
+
+model Dish {
+  id        String    @id @default(cuid())
+  name      String
+  group     DishGroup // define qué es
+  position  Int? // 1 ó 2 para BREAKFAST_MAIN y LUNCH_MAIN
+  dayMenuId String
+  dayMenu   DayMenu   @relation(fields: [dayMenuId], references: [id])
+}

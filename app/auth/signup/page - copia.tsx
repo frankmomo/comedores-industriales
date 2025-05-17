@@ -1,0 +1,63 @@
+// app/auth/signup/page.tsx
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+
+export default function SignUpPage() {
+  const router = useRouter();
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    password: ""
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const res = await fetch("/api/auth/signup", {
+      method: "POST",
+      body: JSON.stringify(form),
+      headers: { "Content-Type": "application/json" }
+    });
+
+    if (res.ok) {
+      router.push("/auth/signin");
+    } else {
+      alert("Error al registrar usuario");
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="max-w-md mx-auto mt-20 space-y-4">
+      <h1 className="text-2xl font-bold">Registro</h1>
+      <input
+        type="text"
+        name="name"
+        placeholder="Nombre"
+        onChange={handleChange}
+        className="border p-2 w-full"
+      />
+      <input
+        type="email"
+        name="email"
+        placeholder="Correo"
+        onChange={handleChange}
+        className="border p-2 w-full"
+      />
+      <input
+        type="password"
+        name="password"
+        placeholder="Contraseña"
+        onChange={handleChange}
+        className="border p-2 w-full"
+      />
+      <button type="submit" className="bg-green-600 text-white p-2 w-full">
+        Crear cuenta
+      </button>
+    </form>
+  );
+}
