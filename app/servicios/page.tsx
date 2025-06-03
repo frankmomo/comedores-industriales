@@ -1,4 +1,4 @@
-// app/serivicios/page.tsx
+// app/servicios/page.tsx
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
