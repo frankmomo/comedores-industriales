@@ -4,7 +4,7 @@ import { ReactNode } from "react";
 import Providers from "@/components/Providers";
 import Navbar from "@/components/Navbar";
 import Link from "next/link";
-import { getServerSession } from "next-auth";
+import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import LogoutButton from "@/components/LogoutButton";
 
