@@ -23,7 +23,22 @@ console.log("URL:", process.env.DATABASE_URL);
     },
   });
 
-  // ── 2. Menú de la semana 19-2025 con sólo Lunes de ejemplo ───────────
+  // ── 2. Catalogo básico de platillos ─────────────
+  await prisma.dishCatalog.createMany({
+    data: [
+      { name: "Huevos Rancheros", group: DishGroup.BREAKFAST_MAIN },
+      { name: "Chilaquiles Verdes", group: DishGroup.BREAKFAST_MAIN },
+      { name: "Milanesa de Pollo", group: DishGroup.LUNCH_MAIN },
+      { name: "Carne en su Jugo", group: DishGroup.LUNCH_MAIN },
+      { name: "Frijoles Refritos", group: DishGroup.COMPLEMENT },
+      { name: "Arroz Rojo", group: DishGroup.COMPLEMENT },
+      { name: "Consomé de Pollo", group: DishGroup.CONSUME },
+      { name: "Gelatina de Fresa", group: DishGroup.DESSERT },
+    ],
+    skipDuplicates: true,
+  });
+
+  // ── 3. Menú de la semana 19-2025 con sólo Lunes de ejemplo ───────────
   await prisma.menu.create({
     data: {
       week: 19,
