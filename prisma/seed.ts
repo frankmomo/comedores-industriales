@@ -1,57 +1,50 @@
-// prisma/seed.ts
-import { PrismaClient, DishGroup, WeekDay } from "@prisma/client";
-import bcrypt from "bcryptjs";
+import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
 async function main() {
-  // Hash demo: admin123
-  const hash = await bcrypt.hash("admin123", 10);
-
-
-  // ── 1. Usuario admin mínimo ──────────────────────────────────────────
-console.log("URL:", process.env.DATABASE_URL);
-
-  const admin = await prisma.user.upsert({
-    where: { email: "admin@demo.com" },
-    update: {},
-    create: {
-      email: "admin@demo.com",
-      name: "Administrador",
-      password: hash, // ← AHORA sí se pasa el valor correcto
-      role: "ADMIN"
-    },
-  });
-
-  // ── 2. Menú de la semana 19-2025 con sólo Lunes de ejemplo ───────────
-  await prisma.menu.create({
-    data: {
-      week: 19,
-      year: 2025,
-      authorId: admin.id,
-      days: {
-        create: {
-          day: WeekDay.MON,
-          dishes: {
-            create: [
-              { name: "Huevos Rancheros", group: DishGroup.BREAKFAST_MAIN, position: 1 },
-              { name: "Chilaquiles Verdes", group: DishGroup.BREAKFAST_MAIN, position: 2 },
-              { name: "Milanesa de Pollo", group: DishGroup.LUNCH_MAIN, position: 1 },
-              { name: "Carne en su Jugo", group: DishGroup.LUNCH_MAIN, position: 2 },
-              { name: "Frijoles Refritos", group: DishGroup.COMPLEMENT },
-              { name: "Arroz Rojo", group: DishGroup.COMPLEMENT },
-              { name: "Consomé de Pollo", group: DishGroup.CONSUME },
-              { name: "Gelatina de Fresa", group: DishGroup.DESSERT },
-            ],
-          },
-        },
+  await prisma.user.createMany({
+    data: [
+      {
+        name: 'Admin',
+        email: 'admin@demo.com',
+        password: 'admin123',
+        role: 'ADMIN',
       },
-    },
+      {
+        name: 'Usuario',
+        email: 'user@demo.com',
+        password: 'user123',
+        role: 'USER',
+      },
+    ],
+    skipDuplicates: true
   });
 
-  console.log("✅  Seed completado");
+  const dishes = [
+    { name: 'Chilaquiles verdes', dish_type: 'BREAKFAST' },
+    { name: 'Huevos al gusto', dish_type: 'BREAKFAST' },
+    { name: 'Milanesa de res', dish_type: 'LUNCH' },
+    { name: 'Enchiladas rojas', dish_type: 'LUNCH' }
+  ];
+
+  for (const dish of dishes) {
+    await prisma.dish.create({
+      data: {
+        name: dish.name,
+        dish_type: dish.dish_type
+      }
+    });
+  }
+
+  console.log('✅ Seed completado correctamente.');
 }
 
 main()
-  .catch((e) => console.error(e))
-  .finally(() => prisma.$disconnect());
+  .catch((e) => {
+    console.error('❌ Error durante el seed:', e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });

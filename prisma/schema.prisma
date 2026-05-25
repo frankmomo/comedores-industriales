@@ -28,6 +28,8 @@ enum WeekDay {
   WED
   THU
   FRI
+
+  @@map("DayOfWeek")
 }
 
 enum DishGroup {

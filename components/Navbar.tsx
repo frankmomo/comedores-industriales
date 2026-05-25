@@ -23,6 +23,11 @@ export default function Navbar() {
     role === "ADMIN"
       ? [
           {
+            href: "/admin/menu/create",
+            label: "Crear menÃº",
+            className: "bg-orange-400 text-white",
+          },
+          {
             href: "/admin/users",
             label: "Usuarios",
             className: "bg-secondary text-white",
