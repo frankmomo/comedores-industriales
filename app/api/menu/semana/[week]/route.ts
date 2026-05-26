@@ -8,18 +8,19 @@ export async function GET(
   { params }: { params: { week: string } }
 ) {
   const session = await getServerSession(authOptions);
-  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!session) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
 
   const week = parseInt(params.week, 10);
   const year = new Date().getFullYear();
 
-  const menu = await prisma.menus.findFirst({
-    where: { week_number: week, year, user_id: session.user.id },
+  const menu = await prisma.menu.findFirst({
+    where: { week, year },
     include: {
-      menu_days: {
+      days: {
         include: {
-          menu_day_dishes: {
-            include: { dishes: true },
+          dishes: {
             orderBy: { position: "asc" },
           },
         },
@@ -28,6 +29,9 @@ export async function GET(
     },
   });
 
-  if (!menu) return NextResponse.json({ error: "Menu not found" }, { status: 404 });
+  if (!menu) {
+    return NextResponse.json({ error: "Menu not found" }, { status: 404 });
+  }
+
   return NextResponse.json(menu);
 }

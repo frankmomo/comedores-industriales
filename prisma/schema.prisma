@@ -28,6 +28,8 @@ enum WeekDay {
   WED
   THU
   FRI
+  SAT
+  SUN
 
   @@map("DayOfWeek")
 }

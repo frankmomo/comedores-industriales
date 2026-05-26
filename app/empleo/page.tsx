@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { authOptions } from "@/lib/auth";
-import { DishGroup, WeekDay } from "@prisma/client";
+import { DayMenu, Dish, WeekDay } from "@prisma/client";
 import LogoutButton from "@/components/LogoutButton"; // 👈 Asegúrate de que existe este archivo
 
 const dayNames: Record<WeekDay, string> = {
@@ -12,7 +12,11 @@ const dayNames: Record<WeekDay, string> = {
   WED: "Miércoles",
   THU: "Jueves",
   FRI: "Viernes",
+  SAT: "Sabado",
+  SUN: "Domingo",
 };
+
+type MenuDay = DayMenu & { dishes: Dish[] };
 
 export default async function MenuPage() {
   const session = await getServerSession(authOptions);
@@ -41,23 +45,23 @@ export default async function MenuPage() {
 
       {!menu && <p>No hay menú para esta semana.</p>}
 
-      {menu?.days.map((day) => {
+      {menu?.days.map((day: MenuDay) => {
         const desayuno = day.dishes
-          .filter((d) => d.group === "BREAKFAST_MAIN")
-          .sort((a, b) => a.position! - b.position!);
+          .filter((d: Dish) => d.group === "BREAKFAST_MAIN")
+          .sort((a: Dish, b: Dish) => a.position! - b.position!);
         const comida = day.dishes
-          .filter((d) => d.group === "LUNCH_MAIN")
-          .sort((a, b) => a.position! - b.position!);
-        const complementos = day.dishes.filter((d) => d.group === "COMPLEMENT");
-        const consome = day.dishes.find((d) => d.group === "CONSUME");
-        const postre = day.dishes.find((d) => d.group === "DESSERT");
+          .filter((d: Dish) => d.group === "LUNCH_MAIN")
+          .sort((a: Dish, b: Dish) => a.position! - b.position!);
+        const complementos = day.dishes.filter((d: Dish) => d.group === "COMPLEMENT");
+        const consome = day.dishes.find((d: Dish) => d.group === "CONSUME");
+        const postre = day.dishes.find((d: Dish) => d.group === "DESSERT");
 
         return (
           <div key={day.day} className="border p-4 rounded shadow mb-4">
             <h2 className="text-lg font-semibold mb-2">{dayNames[day.day]}</h2>
-            <div><strong>Desayuno:</strong> {desayuno.map(d => d.name).join(" / ")}</div>
-            <div><strong>Comida:</strong> {comida.map(d => d.name).join(" / ")}</div>
-            <div><strong>Complementos:</strong> {complementos.map(d => d.name).join(", ")}</div>
+            <div><strong>Desayuno:</strong> {desayuno.map((d: Dish) => d.name).join(" / ")}</div>
+            <div><strong>Comida:</strong> {comida.map((d: Dish) => d.name).join(" / ")}</div>
+            <div><strong>Complementos:</strong> {complementos.map((d: Dish) => d.name).join(", ")}</div>
             <div><strong>Consomé:</strong> {consome?.name || "-"}</div>
             <div><strong>Postre:</strong> {postre?.name || "-"}</div>
           </div>

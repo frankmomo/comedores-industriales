@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
   }
 
   const { week, year, days } = await req.json();
-  let authorId = session.user.id;
+  let authorId: string | undefined = session.user.id;
 
   if (!authorId && session.user.email) {
     const user = await prisma.user.findUnique({
@@ -63,7 +63,7 @@ export async function POST(req: NextRequest) {
       select: { id: true },
     });
 
-    const existingMenuIds = existingMenus.map((menu) => menu.id);
+    const existingMenuIds = existingMenus.map((menu: { id: string }) => menu.id);
 
     if (existingMenuIds.length > 0) {
       await prisma.dish.deleteMany({

@@ -11,7 +11,7 @@ export function MenuCreatorManual() {
   const [formData, setFormData] = useState<any>({});
 
   const handleInput = (day: string, type: string, value: string) => {
-    setFormData(prev => ({
+    setFormData((prev: any) => ({
       ...prev,
       [day]: {
         ...prev[day],

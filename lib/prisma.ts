@@ -1,6 +1,11 @@
 import { PrismaClient } from "@prisma/client";
 
-// Previene la creación de múltiples instancias en hot‑reload
-export const prisma = globalThis.prisma ?? new PrismaClient();
+const globalForPrisma = globalThis as unknown as {
+  prisma?: PrismaClient;
+};
 
-if (process.env.NODE_ENV !== "production") globalThis.prisma = prisma;
+export const prisma = globalForPrisma.prisma ?? new PrismaClient();
+
+if (process.env.NODE_ENV !== "production") {
+  globalForPrisma.prisma = prisma;
+}
