@@ -5,7 +5,14 @@ import { getWeek } from "@/utils/getWeek";
 
 export function MenuCreatorManual() {
   const days = ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"];
-  const dishTypes = ["BREAKFAST", "LUNCH", "COMPLEMENT", "CONSOMME", "DESSERT"];
+  const dishFields = [
+    { key: "BREAKFAST", label: "Breakfast", category: "BREAKFAST", position: 1 },
+    { key: "LUNCH", label: "Lunch", category: "LUNCH", position: 1 },
+    { key: "COMPLEMENT_1", label: "Complement 1", category: "COMPLEMENT", position: 1 },
+    { key: "COMPLEMENT_2", label: "Complement 2", category: "COMPLEMENT", position: 2 },
+    { key: "CONSOMME", label: "Consomme", category: "CONSOMME", position: null },
+    { key: "DESSERT", label: "Dessert", category: "DESSERT", position: null },
+  ];
 
   const [formData, setFormData] = useState<any>({});
   const [isSaving, setIsSaving] = useState(false);
@@ -28,12 +35,12 @@ export function MenuCreatorManual() {
 
     const daysPayload = days.map((day) => ({
       name: day,
-      dishes: dishTypes
-        .filter((type) => formData[day]?.[type])
-        .map((type, idx) => ({
-          id: parseInt(formData[day][type], 10),
-          category: type,
-          position: idx + 1,
+      dishes: dishFields
+        .filter((field) => formData[day]?.[field.key])
+        .map((field) => ({
+          id: parseInt(formData[day][field.key], 10),
+          category: field.category,
+          position: field.position,
         })),
     }));
 
@@ -62,15 +69,15 @@ export function MenuCreatorManual() {
         <div key={day} className="rounded-md border border-gray-200 bg-white p-3 shadow-sm sm:p-4">
           <h3 className="mb-3 text-base font-semibold text-gray-900">{day}</h3>
           <div className="grid gap-3 sm:grid-cols-2">
-            {dishTypes.map((type) => (
-              <div key={type} className="space-y-1">
-                <label className="block text-sm font-medium text-gray-700">{type} ID</label>
+            {dishFields.map((field) => (
+              <div key={field.key} className="space-y-1">
+                <label className="block text-sm font-medium text-gray-700">{field.label} ID</label>
                 <input
                   type="number"
                   inputMode="numeric"
                   min="1"
                   className="min-h-11 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-secondary focus:outline-none focus:ring-2 focus:ring-secondary/20"
-                  onChange={(e) => handleInput(day, type, e.target.value)}
+                  onChange={(e) => handleInput(day, field.key, e.target.value)}
                 />
               </div>
             ))}

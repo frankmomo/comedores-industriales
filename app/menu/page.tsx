@@ -52,7 +52,9 @@ export default async function MenuPage() {
         const comida = day.dishes
           .filter((d: Dish) => d.group === "LUNCH_MAIN")
           .sort((a: Dish, b: Dish) => a.position! - b.position!);
-        const complementos = day.dishes.filter((d: Dish) => d.group === "COMPLEMENT");
+        const complementos = day.dishes
+          .filter((d: Dish) => d.group === "COMPLEMENT")
+          .sort((a: Dish, b: Dish) => (a.position ?? 0) - (b.position ?? 0));
         const consome = day.dishes.find((d: Dish) => d.group === "CONSUME");
         const postre = day.dishes.find((d: Dish) => d.group === "DESSERT");
 
@@ -61,7 +63,8 @@ export default async function MenuPage() {
             <h2 className="text-lg font-semibold mb-2">{dayNames[day.day]}</h2>
             <div><strong>Desayuno:</strong> {desayuno.map((d: Dish) => d.name).join(" / ")}</div>
             <div><strong>Comida:</strong> {comida.map((d: Dish) => d.name).join(" / ")}</div>
-            <div><strong>Complementos:</strong> {complementos.map((d: Dish) => d.name).join(", ")}</div>
+            <div><strong>Complemento 1:</strong> {complementos.find((d: Dish) => d.position === 1)?.name || "-"}</div>
+            <div><strong>Complemento 2:</strong> {complementos.find((d: Dish) => d.position === 2)?.name || "-"}</div>
             <div><strong>Consomé:</strong> {consome?.name || "-"}</div>
             <div><strong>Postre:</strong> {postre?.name || "-"}</div>
           </div>

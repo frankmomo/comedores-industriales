@@ -15,7 +15,14 @@ export function MenuCreatorDropdown() {
       .finally(() => setIsLoading(false));
   }, []);
 
-  const dishTypes = ["BREAKFAST", "LUNCH", "COMPLEMENT", "CONSOMME", "DESSERT"];
+  const dishFields = [
+    { key: "BREAKFAST", label: "Breakfast", type: "BREAKFAST", category: "BREAKFAST", position: 1 },
+    { key: "LUNCH", label: "Lunch", type: "LUNCH", category: "LUNCH", position: 1 },
+    { key: "COMPLEMENT_1", label: "Complement 1", type: "COMPLEMENT", category: "COMPLEMENT", position: 1 },
+    { key: "COMPLEMENT_2", label: "Complement 2", type: "COMPLEMENT", category: "COMPLEMENT", position: 2 },
+    { key: "CONSOMME", label: "Consomme", type: "CONSOMME", category: "CONSOMME", position: null },
+    { key: "DESSERT", label: "Dessert", type: "DESSERT", category: "DESSERT", position: null },
+  ];
   const days = ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"];
 
   const handleChange = (day: string, type: string, value: string) => {
@@ -36,12 +43,12 @@ export function MenuCreatorDropdown() {
 
     const daysPayload = days.map((day) => ({
       name: day,
-      dishes: dishTypes
-        .filter((type) => menu[day]?.[type])
-        .map((type, idx) => ({
-          id: parseInt(menu[day][type], 10),
-          category: type,
-          position: idx + 1,
+      dishes: dishFields
+        .filter((field) => menu[day]?.[field.key])
+        .map((field) => ({
+          id: parseInt(menu[day][field.key], 10),
+          category: field.category,
+          position: field.position,
         })),
     }));
 
@@ -70,18 +77,18 @@ export function MenuCreatorDropdown() {
         <div key={day} className="rounded-md border border-gray-200 bg-white p-3 shadow-sm sm:p-4">
           <h3 className="mb-3 text-base font-semibold text-gray-900">{day}</h3>
           <div className="grid gap-3 sm:grid-cols-2">
-            {dishTypes.map((type) => (
-              <div key={type} className="space-y-1">
-                <label className="block text-sm font-medium text-gray-700">{type}</label>
+            {dishFields.map((field) => (
+              <div key={field.key} className="space-y-1">
+                <label className="block text-sm font-medium text-gray-700">{field.label}</label>
                 <select
                   className="min-h-11 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-                  onChange={(e) => handleChange(day, type, e.target.value)}
+                  onChange={(e) => handleChange(day, field.key, e.target.value)}
                 >
                   <option value="">
                     {isLoading ? "Cargando platillos..." : "Selecciona platillo"}
                   </option>
                   {dishes
-                    .filter((dish) => dish.type === type)
+                    .filter((dish) => dish.type === field.type)
                     .map((dish) => (
                       <option key={dish.id} value={dish.id}>
                         {dish.name}
