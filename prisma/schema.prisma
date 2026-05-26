@@ -52,6 +52,9 @@ enum CatalogDishType {
 
 model Menu {
   id        String    @id @default(cuid())
+  name      String?
+  startDate DateTime?
+  endDate   DateTime?
   week      Int
   year      Int
   days      DayMenu[]

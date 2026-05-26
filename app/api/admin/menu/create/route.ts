@@ -3,6 +3,8 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { CatalogDishItem, exampleDishes } from "@/lib/dishCatalog";
+import { buildMenuName } from "@/lib/menuDates";
+import { ensureMenuMetadataColumns } from "@/lib/menuMetadata";
 
 const dayMap: Record<string, "MON" | "TUE" | "WED" | "THU" | "FRI"> = {
   MONDAY: "MON",
@@ -26,7 +28,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
   }
 
-  const { week, year, days } = await req.json();
+  const { week, year, days, menuName, startDate, endDate } = await req.json();
   let authorId: string | undefined = session.user.id;
 
   if (!authorId && session.user.email) {
@@ -42,6 +44,10 @@ export async function POST(req: NextRequest) {
   }
 
   try {
+    await ensureMenuMetadataColumns();
+    const safeStartDate = startDate || new Date().toISOString().slice(0, 10);
+    const safeEndDate = endDate || safeStartDate;
+
     const selectedIds = Array.from(
       new Set(
         days.flatMap((day: any) =>
@@ -91,6 +97,9 @@ export async function POST(req: NextRequest) {
 
     const created = await prisma.menu.create({
       data: {
+        name: String(menuName || "").trim() || buildMenuName(safeStartDate, safeEndDate),
+        startDate: new Date(`${safeStartDate}T00:00:00`),
+        endDate: new Date(`${safeEndDate}T00:00:00`),
         week,
         year,
         authorId,

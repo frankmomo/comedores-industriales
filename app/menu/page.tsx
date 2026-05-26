@@ -1,22 +1,12 @@
-// app/menu/page.tsx
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { authOptions } from "@/lib/auth";
-import { DayMenu, Dish, WeekDay } from "@prisma/client";
-import LogoutButton from "@/components/LogoutButton"; // 👈 Asegúrate de que existe este archivo
+import { ensureMenuMetadataColumns } from "@/lib/menuMetadata";
+import { buildMenuName } from "@/lib/menuDates";
+import { WeeklyMenu, WeeklyMenuSelector } from "@/components/WeeklyMenuSelector";
 
-const dayNames: Record<WeekDay, string> = {
-  MON: "Lunes",
-  TUE: "Martes",
-  WED: "Miércoles",
-  THU: "Jueves",
-  FRI: "Viernes",
-  SAT: "Sabado",
-  SUN: "Domingo",
-};
-
-type MenuDay = DayMenu & { dishes: Dish[] };
+export const dynamic = "force-dynamic";
 
 export default async function MenuPage() {
   const session = await getServerSession(authOptions);
@@ -26,55 +16,51 @@ export default async function MenuPage() {
   const currentWeek = getWeek(now);
   const year = now.getFullYear();
 
-  const menu = await prisma.menu.findFirst({
-    where: { week: currentWeek, year },
+  await ensureMenuMetadataColumns();
+
+  const menus = await prisma.menu.findMany({
     include: {
       days: {
-        orderBy: { day: "asc" },
         include: { dishes: true },
       },
     },
+    orderBy: [{ year: "desc" }, { week: "desc" }, { createdAt: "desc" }],
   });
 
+  const serializedMenus: WeeklyMenu[] = menus.map((menu) => ({
+    id: menu.id,
+    name:
+      menu.name ||
+      (menu.startDate && menu.endDate
+        ? buildMenuName(menu.startDate.toISOString().slice(0, 10), menu.endDate.toISOString().slice(0, 10))
+        : `Menu semana ${menu.week} de ${menu.year}`),
+    week: menu.week,
+    year: menu.year,
+    startDate: menu.startDate?.toISOString() ?? null,
+    endDate: menu.endDate?.toISOString() ?? null,
+    days: menu.days.map((day) => ({
+      id: day.id,
+      day: day.day,
+      dishes: day.dishes.map((dish) => ({
+        id: dish.id,
+        name: dish.name,
+        group: dish.group,
+        position: dish.position,
+      })),
+    })),
+  }));
+
+  const defaultMenu =
+    serializedMenus.find((menu) => menu.week === currentWeek && menu.year === year) ?? serializedMenus[0];
+
   return (
-    <div className="p-6">
-      
-
-<h1 className="mb-6 text-2xl font-bold">Menú semanal</h1>
-
-
-      {!menu && <p>No hay menú para esta semana.</p>}
-
-      {menu?.days.map((day: MenuDay) => {
-        const desayuno = day.dishes
-          .filter((d: Dish) => d.group === "BREAKFAST_MAIN")
-          .sort((a: Dish, b: Dish) => a.position! - b.position!);
-        const comida = day.dishes
-          .filter((d: Dish) => d.group === "LUNCH_MAIN")
-          .sort((a: Dish, b: Dish) => a.position! - b.position!);
-        const complementos = day.dishes
-          .filter((d: Dish) => d.group === "COMPLEMENT")
-          .sort((a: Dish, b: Dish) => (a.position ?? 0) - (b.position ?? 0));
-        const consome = day.dishes.find((d: Dish) => d.group === "CONSUME");
-        const postre = day.dishes.find((d: Dish) => d.group === "DESSERT");
-
-        return (
-          <div key={day.day} className="border p-4 rounded shadow mb-4">
-            <h2 className="text-lg font-semibold mb-2">{dayNames[day.day]}</h2>
-            <div><strong>Desayuno:</strong> {desayuno.map((d: Dish) => d.name).join(" / ")}</div>
-            <div><strong>Comida:</strong> {comida.map((d: Dish) => d.name).join(" / ")}</div>
-            <div><strong>Complemento 1:</strong> {complementos.find((d: Dish) => d.position === 1)?.name || "-"}</div>
-            <div><strong>Complemento 2:</strong> {complementos.find((d: Dish) => d.position === 2)?.name || "-"}</div>
-            <div><strong>Consomé:</strong> {consome?.name || "-"}</div>
-            <div><strong>Postre:</strong> {postre?.name || "-"}</div>
-          </div>
-        );
-      })}
-    </div>
+    <main className="mx-auto w-full max-w-4xl px-4 py-6 sm:px-6 lg:px-8">
+      <h1 className="mb-6 text-2xl font-bold">Menu semanal</h1>
+      <WeeklyMenuSelector menus={serializedMenus} defaultMenuId={defaultMenu?.id} />
+    </main>
   );
 }
 
-// Calcula el número de semana ISO
 function getWeek(date: Date): number {
   const temp = new Date(date.getFullYear(), date.getMonth(), date.getDate());
   const day = temp.getDay() || 7;

@@ -3,7 +3,13 @@
 import { useState } from "react";
 import { getWeek } from "@/utils/getWeek";
 
-export function MenuCreatorManual() {
+type MenuMeta = {
+  menuName: string;
+  startDate: string;
+  endDate: string;
+};
+
+export function MenuCreatorManual({ menuMeta }: { menuMeta: MenuMeta }) {
   const days = ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"];
   const dishFields = [
     { key: "BREAKFAST", label: "Breakfast", category: "BREAKFAST", position: 1 },
@@ -29,8 +35,9 @@ export function MenuCreatorManual() {
 
   const handleSubmit = async () => {
     setIsSaving(true);
-    const week = getWeek();
-    const year = new Date().getFullYear();
+    const menuStart = new Date(`${menuMeta.startDate}T00:00:00`);
+    const week = getWeek(menuStart);
+    const year = menuStart.getFullYear();
     const userId = 1;
 
     const daysPayload = days.map((day) => ({
@@ -48,7 +55,7 @@ export function MenuCreatorManual() {
       const res = await fetch("/api/admin/menu/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ week, year, userId, days: daysPayload }),
+        body: JSON.stringify({ week, year, userId, ...menuMeta, days: daysPayload }),
       });
 
       if (!res.ok) {
