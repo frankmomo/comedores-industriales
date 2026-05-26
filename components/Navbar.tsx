@@ -30,6 +30,11 @@ export default function Navbar() {
             className: "bg-orange-400 text-white",
           },
           {
+            href: "/admin/dishes",
+            label: "Catalogo",
+            className: "bg-white text-secondary",
+          },
+          {
             href: "/admin/users",
             label: "Usuarios",
             className: "bg-secondary text-white",

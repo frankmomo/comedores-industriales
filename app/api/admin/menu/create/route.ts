@@ -2,23 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-
-const exampleDishes = [
-  { id: 1, name: "Chilaquiles verdes con pollo", type: "BREAKFAST" },
-  { id: 2, name: "Huevos revueltos con jamon", type: "BREAKFAST" },
-  { id: 3, name: "Hot cakes con fruta", type: "BREAKFAST" },
-  { id: 4, name: "Milanesa de pollo", type: "LUNCH" },
-  { id: 5, name: "Carne asada con arroz", type: "LUNCH" },
-  { id: 6, name: "Enchiladas rojas", type: "LUNCH" },
-  { id: 7, name: "Frijoles refritos", type: "COMPLEMENT" },
-  { id: 8, name: "Verduras al vapor", type: "COMPLEMENT" },
-  { id: 9, name: "Ensalada mixta", type: "COMPLEMENT" },
-  { id: 10, name: "Consome de pollo", type: "CONSOMME" },
-  { id: 11, name: "Sopa de fideo", type: "CONSOMME" },
-  { id: 12, name: "Gelatina de sabores", type: "DESSERT" },
-  { id: 13, name: "Arroz con leche", type: "DESSERT" },
-  { id: 14, name: "Flan napolitano", type: "DESSERT" },
-];
+import { CatalogDishItem, exampleDishes } from "@/lib/dishCatalog";
 
 const dayMap: Record<string, "MON" | "TUE" | "WED" | "THU" | "FRI"> = {
   MONDAY: "MON",
@@ -58,6 +42,26 @@ export async function POST(req: NextRequest) {
   }
 
   try {
+    const selectedIds = Array.from(
+      new Set(
+        days.flatMap((day: any) =>
+          Array.isArray(day.dishes) ? day.dishes.map((dish: any) => dish.id).filter(Boolean) : [],
+        ),
+      ),
+    ) as number[];
+
+    let catalogDishes: CatalogDishItem[] = [];
+
+    try {
+      catalogDishes = await prisma.catalogDish.findMany({
+        where: { id: { in: selectedIds }, active: true },
+        select: { id: true, name: true, type: true },
+      });
+    } catch (error) {
+      console.warn("Using example dishes because the catalog table is unavailable.", error);
+      catalogDishes = exampleDishes;
+    }
+
     const existingMenus = await prisma.menu.findMany({
       where: { week, year },
       select: { id: true },
@@ -98,7 +102,7 @@ export async function POST(req: NextRequest) {
               dishes: {
                 create: day.dishes
                   .map((dish: any) => {
-                    const selectedDish = exampleDishes.find((item) => item.id === dish.id);
+                    const selectedDish = catalogDishes.find((item) => item.id === dish.id);
                     const group = groupMap[dish.category];
 
                     if (!selectedDish || !group) return null;

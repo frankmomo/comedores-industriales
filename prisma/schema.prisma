@@ -42,6 +42,14 @@ enum DishGroup {
   DESSERT // Solo comida
 }
 
+enum CatalogDishType {
+  BREAKFAST
+  LUNCH
+  COMPLEMENT
+  CONSOMME
+  DESSERT
+}
+
 model Menu {
   id        String    @id @default(cuid())
   week      Int
@@ -50,6 +58,17 @@ model Menu {
   authorId  String
   author    User      @relation("UserMenus", fields: [authorId], references: [id]) // ← debe coincidir
   createdAt DateTime  @default(now())
+}
+
+model CatalogDish {
+  id        Int             @id @default(autoincrement())
+  name      String
+  type      CatalogDishType
+  active    Boolean         @default(true)
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+
+  @@unique([name, type])
 }
 
 model DayMenu {
