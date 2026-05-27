@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { getWeek } from "@/utils/getWeek";
+import { CatalogDishItem, CatalogDishType } from "@/lib/dishCatalog";
 
 type MenuMeta = {
   menuName: string;
@@ -9,7 +10,7 @@ type MenuMeta = {
 };
 
 export function MenuCreatorDropdown({ menuMeta }: { menuMeta: MenuMeta }) {
-  const [dishes, setDishes] = useState<any[]>([]);
+  const [dishes, setDishes] = useState<CatalogDishItem[]>([]);
   const [menu, setMenu] = useState<any>({});
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -51,9 +52,15 @@ export function MenuCreatorDropdown({ menuMeta }: { menuMeta: MenuMeta }) {
     const daysPayload = days.map((day) => ({
       name: day,
       dishes: dishFields
-        .filter((field) => menu[day]?.[field.key])
+        .filter((field) => String(menu[day]?.[field.key] ?? "").trim())
         .map((field) => ({
-          id: parseInt(menu[day][field.key], 10),
+          id: dishes.find(
+            (dish) =>
+              dish.type === field.type &&
+              dish.name.trim().toLowerCase() === String(menu[day][field.key]).trim().toLowerCase(),
+          )?.id,
+          name: String(menu[day][field.key]).trim(),
+          type: field.type,
           category: field.category,
           position: field.position,
         })),
@@ -87,21 +94,21 @@ export function MenuCreatorDropdown({ menuMeta }: { menuMeta: MenuMeta }) {
             {dishFields.map((field) => (
               <div key={field.key} className="space-y-1">
                 <label className="block text-sm font-medium text-gray-700">{field.label}</label>
-                <select
+                <input
+                  type="text"
+                  list={`dish-options-${day}-${field.key}`}
+                  value={menu[day]?.[field.key] ?? ""}
+                  placeholder={isLoading ? "Cargando platillos..." : "Escribe o selecciona platillo"}
                   className="min-h-11 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
                   onChange={(e) => handleChange(day, field.key, e.target.value)}
-                >
-                  <option value="">
-                    {isLoading ? "Cargando platillos..." : "Selecciona platillo"}
-                  </option>
+                />
+                <datalist id={`dish-options-${day}-${field.key}`}>
                   {dishes
-                    .filter((dish) => dish.type === field.type)
+                    .filter((dish) => dish.type === (field.type as CatalogDishType))
                     .map((dish) => (
-                      <option key={dish.id} value={dish.id}>
-                        {dish.name}
-                      </option>
+                      <option key={dish.id} value={dish.name} />
                     ))}
-                </select>
+                </datalist>
               </div>
             ))}
           </div>

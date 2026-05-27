@@ -80,7 +80,7 @@ export default function AdminMenuCreatePage() {
           }`}
           onClick={() => setMode("dropdown")}
         >
-          Listas desplegables
+          Autocompletar platillos
         </button>
         <button
           type="button"
