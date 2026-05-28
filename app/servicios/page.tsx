@@ -1,81 +1,47 @@
-// app/serivicios/page.tsx
-import { getServerSession } from "next-auth";
-import { redirect } from "next/navigation";
-import { prisma } from "@/lib/prisma";
-import { authOptions } from "@/lib/auth";
-import { DayMenu, Dish, WeekDay } from "@prisma/client";
-import LogoutButton from "@/components/LogoutButton"; // 👈 Asegúrate de que existe este archivo
+import Link from "next/link";
+import { siteContent } from "@/lib/siteContent";
 
-const dayNames: Record<WeekDay, string> = {
-  MON: "Lunes",
-  TUE: "Martes",
-  WED: "Miércoles",
-  THU: "Jueves",
-  FRI: "Viernes",
-  SAT: "Sabado",
-  SUN: "Domingo",
-};
-
-type MenuDay = DayMenu & { dishes: Dish[] };
-
-export default async function MenuPage() {
-  const session = await getServerSession(authOptions);
-  if (!session) redirect("/auth/signin");
-
-  const now = new Date();
-  const currentWeek = getWeek(now);
-  const year = now.getFullYear();
-
-  const menu = await prisma.menu.findFirst({
-    where: { week: currentWeek, year },
-    include: {
-      days: {
-        orderBy: { day: "asc" },
-        include: { dishes: true },
-      },
-    },
-  });
-
+export default function ServiciosPage() {
   return (
-    <div className="p-6">
-      
+    <main>
+      <section className="bg-secondary px-4 py-16 text-white sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-6xl">
+          <h1 className="text-4xl font-extrabold">Servicios</h1>
+          <p className="mt-4 max-w-3xl text-lg text-white/85">{siteContent.servicesIntro}</p>
+        </div>
+      </section>
 
-<h1 className="mb-6 text-2xl font-bold">SERVICIOS</h1>
+      <section className="mx-auto grid max-w-6xl gap-6 px-4 py-14 sm:px-6 lg:grid-cols-3 lg:px-8">
+        {siteContent.services.map((service) => (
+          <article key={service.title} className="overflow-hidden rounded-md border border-gray-200 bg-white shadow-sm">
+            <img src={service.image} alt={service.alt} className="h-56 w-full object-cover" />
+            <div className="p-5">
+              <h2 className="text-xl font-bold text-secondary">{service.title}</h2>
+              <p className="mt-3 leading-6 text-gray-700">{service.body}</p>
+            </div>
+          </article>
+        ))}
+      </section>
 
-
-      {!menu && <p>No hay menú para esta semana.</p>}
-
-      {menu?.days.map((day: MenuDay) => {
-        const desayuno = day.dishes
-          .filter((d: Dish) => d.group === "BREAKFAST_MAIN")
-          .sort((a: Dish, b: Dish) => a.position! - b.position!);
-        const comida = day.dishes
-          .filter((d: Dish) => d.group === "LUNCH_MAIN")
-          .sort((a: Dish, b: Dish) => a.position! - b.position!);
-        const complementos = day.dishes.filter((d: Dish) => d.group === "COMPLEMENT");
-        const consome = day.dishes.find((d: Dish) => d.group === "CONSUME");
-        const postre = day.dishes.find((d: Dish) => d.group === "DESSERT");
-
-        return (
-          <div key={day.day} className="border p-4 rounded shadow mb-4">
-            <h2 className="text-lg font-semibold mb-2">{dayNames[day.day]}</h2>
-            <div><strong>Desayuno:</strong> {desayuno.map((d: Dish) => d.name).join(" / ")}</div>
-            <div><strong>Comida:</strong> {comida.map((d: Dish) => d.name).join(" / ")}</div>
-            <div><strong>Complementos:</strong> {complementos.map((d: Dish) => d.name).join(", ")}</div>
-            <div><strong>Consomé:</strong> {consome?.name || "-"}</div>
-            <div><strong>Postre:</strong> {postre?.name || "-"}</div>
+      <section className="bg-gray-50 px-4 py-14 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-4xl">
+          <h2 className="text-3xl font-bold text-gray-900">Preguntas frecuentes</h2>
+          <div className="mt-6 space-y-4">
+            {siteContent.faq.map((item) => (
+              <article key={item.question} className="rounded-md border border-gray-200 bg-white p-5">
+                <h3 className="font-bold text-secondary">{item.question}</h3>
+                <p className="mt-2 text-gray-700">{item.answer}</p>
+              </article>
+            ))}
           </div>
-        );
-      })}
-    </div>
+          <Link
+            href="/contacto"
+            className="mt-8 inline-flex min-h-11 items-center justify-center rounded-md bg-primary px-6 py-3 text-sm font-bold text-white hover:bg-primary/90"
+          >
+            Solicitar cotizacion
+          </Link>
+        </div>
+      </section>
+    </main>
   );
-}
-
-// Calcula el número de semana ISO
-function getWeek(date: Date): number {
-  const temp = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-  const day = temp.getDay() || 7;
-  temp.setDate(temp.getDate() + 4 - day);
-  const yearStart = new Date(temp.getFullYear(), 0, 1);
-  return Math.ceil(((+temp - +yearStart) / 86400000 + 1) / 7);
 }

@@ -1,81 +1,39 @@
-//app/nosotros/page.tsx
-import { getServerSession } from "next-auth";
-import { redirect } from "next/navigation";
-import { prisma } from "@/lib/prisma";
-import { authOptions } from "@/lib/auth";
-import { DayMenu, Dish, WeekDay } from "@prisma/client";
-import LogoutButton from "@/components/LogoutButton"; // 👈 Asegúrate de que existe este archivo
+import { siteContent } from "@/lib/siteContent";
 
-const dayNames: Record<WeekDay, string> = {
-  MON: "Lunes",
-  TUE: "Martes",
-  WED: "Miércoles",
-  THU: "Jueves",
-  FRI: "Viernes",
-  SAT: "Sabado",
-  SUN: "Domingo",
-};
-
-type MenuDay = DayMenu & { dishes: Dish[] };
-
-export default async function MenuPage() {
-  const session = await getServerSession(authOptions);
-  if (!session) redirect("/auth/signin");
-
-  const now = new Date();
-  const currentWeek = getWeek(now);
-  const year = now.getFullYear();
-
-  const menu = await prisma.menu.findFirst({
-    where: { week: currentWeek, year },
-    include: {
-      days: {
-        orderBy: { day: "asc" },
-        include: { dishes: true },
-      },
-    },
-  });
-
+export default function NosotrosPage() {
   return (
-    <div className="p-6">
-      
+    <main className="bg-white">
+      <section className="bg-secondary px-4 py-16 text-white sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-5xl">
+          <p className="text-sm font-bold uppercase tracking-wide text-orange-300">Food The Child</p>
+          <h1 className="mt-2 text-4xl font-extrabold">Quienes somos</h1>
+          <p className="mt-4 max-w-3xl text-lg text-white/85">{siteContent.about.body}</p>
+        </div>
+      </section>
 
-<h1 className="mb-6 text-2xl font-bold">NOSOTROS</h1>
+      <section className="mx-auto grid max-w-5xl gap-6 px-4 py-14 sm:px-6 md:grid-cols-2 lg:px-8">
+        <article className="rounded-md border border-gray-200 bg-white p-6 shadow-sm">
+          <h2 className="text-2xl font-bold text-secondary">Mision</h2>
+          <p className="mt-3 leading-7 text-gray-700">{siteContent.about.mission}</p>
+        </article>
+        <article className="rounded-md border border-gray-200 bg-white p-6 shadow-sm">
+          <h2 className="text-2xl font-bold text-secondary">Vision</h2>
+          <p className="mt-3 leading-7 text-gray-700">{siteContent.about.vision}</p>
+        </article>
+      </section>
 
-
-      {!menu && <p>No hay menú para esta semana.</p>}
-
-      {menu?.days.map((day: MenuDay) => {
-        const desayuno = day.dishes
-          .filter((d: Dish) => d.group === "BREAKFAST_MAIN")
-          .sort((a: Dish, b: Dish) => a.position! - b.position!);
-        const comida = day.dishes
-          .filter((d: Dish) => d.group === "LUNCH_MAIN")
-          .sort((a: Dish, b: Dish) => a.position! - b.position!);
-        const complementos = day.dishes.filter((d: Dish) => d.group === "COMPLEMENT");
-        const consome = day.dishes.find((d: Dish) => d.group === "CONSUME");
-        const postre = day.dishes.find((d: Dish) => d.group === "DESSERT");
-
-        return (
-          <div key={day.day} className="border p-4 rounded shadow mb-4">
-            <h2 className="text-lg font-semibold mb-2">{dayNames[day.day]}</h2>
-            <div><strong>Desayuno:</strong> {desayuno.map((d: Dish) => d.name).join(" / ")}</div>
-            <div><strong>Comida:</strong> {comida.map((d: Dish) => d.name).join(" / ")}</div>
-            <div><strong>Complementos:</strong> {complementos.map((d: Dish) => d.name).join(", ")}</div>
-            <div><strong>Consomé:</strong> {consome?.name || "-"}</div>
-            <div><strong>Postre:</strong> {postre?.name || "-"}</div>
+      <section className="bg-gray-50 px-4 py-14 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-5xl">
+          <h2 className="text-3xl font-bold text-gray-900">Nuestros valores</h2>
+          <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {siteContent.values.map((value) => (
+              <div key={value} className="rounded-md border border-gray-200 bg-white px-4 py-3 text-sm font-semibold text-gray-700">
+                {value}
+              </div>
+            ))}
           </div>
-        );
-      })}
-    </div>
+        </div>
+      </section>
+    </main>
   );
-}
-
-// Calcula el número de semana ISO
-function getWeek(date: Date): number {
-  const temp = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-  const day = temp.getDay() || 7;
-  temp.setDate(temp.getDate() + 4 - day);
-  const yearStart = new Date(temp.getFullYear(), 0, 1);
-  return Math.ceil(((+temp - +yearStart) / 86400000 + 1) / 7);
 }
