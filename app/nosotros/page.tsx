@@ -1,8 +1,9 @@
 import { siteContent } from "@/lib/siteContent";
+import { FoodTheChildFooter } from "@/components/FoodTheChildFooter";
 
 export default function NosotrosPage() {
   return (
-    <main className="bg-white">
+    <main className="ftc-public bg-white">
       <section className="bg-secondary px-4 py-16 text-white sm:px-6 lg:px-8">
         <div className="mx-auto max-w-5xl">
           <p className="text-sm font-bold uppercase tracking-wide text-orange-300">Food The Child</p>
@@ -34,6 +35,7 @@ export default function NosotrosPage() {
           </div>
         </div>
       </section>
+      <FoodTheChildFooter />
     </main>
   );
 }

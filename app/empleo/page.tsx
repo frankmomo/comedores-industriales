@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { siteContent } from "@/lib/siteContent";
+import { FoodTheChildFooter } from "@/components/FoodTheChildFooter";
 
 export default function EmpleoPage() {
   return (
-    <main>
+    <main className="ftc-public">
       <section className="bg-secondary px-4 py-16 text-white sm:px-6 lg:px-8">
         <div className="mx-auto max-w-5xl">
           <h1 className="text-4xl font-extrabold">Empleo</h1>
@@ -35,6 +36,7 @@ export default function EmpleoPage() {
           </Link>
         </div>
       </section>
+      <FoodTheChildFooter />
     </main>
   );
 }

@@ -5,8 +5,9 @@ export const siteContent = {
   emailHref: "mailto:foodthechild@gmail.com",
   address: "Calle Jose Lopez Portillo Ote. 10661-3, Tijuana, BC",
   hours: "Lunes a Viernes · 7:00 - 17:00 h",
-  heroVideo: "https://www.foodthechild.com.mx/assets/Hero.mp4",
-  logo: "https://www.foodthechild.com.mx/assets/logo.png",
+  heroVideo: "/assets/Hero.mp4",
+  logo: "/assets/logo.png",
+  ogImage: "/assets/comedor.jpg",
   mapSrc:
     "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3363.4860606845427!2d-116.93214612488836!3d32.53987069606867!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x80d9478d875b1fbb%3A0x66d7a0271e932d87!2sFoodthechild!5e0!3m2!1ses-419!2smx!4v1755240820195!5m2!1ses-419!2smx",
   hero: {
@@ -37,19 +38,19 @@ export const siteContent = {
     {
       title: "Comedor industrial",
       body: "Menu rotativo validado por nutriologa con dos opciones de desayuno y comida. Operacion con higiene y abasto confiable.",
-      image: "https://www.foodthechild.com.mx/assets/comedor.jpg",
+      image: "/assets/comedor.jpg",
       alt: "Comedor industrial para empresas en Tijuana",
     },
     {
       title: "Box-Lunch & Snack Bar",
       body: "Soluciones para turnos extendidos: bocadillos saludables y opciones calientes listas para llevar.",
-      image: "https://www.foodthechild.com.mx/assets/boxlunch.jpg",
+      image: "/assets/boxlunch.jpg",
       alt: "Box lunch y snack bar para turnos extendidos",
     },
     {
       title: "Eventos corporativos",
       body: "Coffee break, posadas y capacitaciones con montaje completo y personal de servicio.",
-      image: "https://www.foodthechild.com.mx/assets/eventos.jpg",
+      image: "/assets/eventos.jpg",
       alt: "Catering para eventos corporativos en Tijuana",
     },
   ],

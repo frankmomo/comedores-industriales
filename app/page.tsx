@@ -1,99 +1,108 @@
-import Link from "next/link";
 import { siteContent } from "@/lib/siteContent";
+import { FoodTheChildFooter } from "@/components/FoodTheChildFooter";
 
 export default function Home() {
   return (
-    <main>
-      <section id="inicio" className="relative min-h-[78vh] overflow-hidden bg-secondary text-white">
-        <video
-          src={siteContent.heroVideo}
-          autoPlay
-          loop
-          muted
-          playsInline
-          className="absolute inset-0 h-full w-full object-cover opacity-45"
-        />
-        <div className="absolute inset-0 bg-[#022C43]/65" />
-        <div className="relative mx-auto flex min-h-[78vh] max-w-7xl items-center px-4 py-16 sm:px-6 lg:px-8">
-          <div className="max-w-3xl">
-            <h1 className="text-4xl font-extrabold leading-tight sm:text-6xl">{siteContent.hero.title}</h1>
-            <p className="mt-5 max-w-2xl text-lg text-white/90 sm:text-xl">{siteContent.hero.body}</p>
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Link
-                href="/contacto"
-                className="inline-flex min-h-11 items-center justify-center rounded-md bg-primary px-6 py-3 text-sm font-bold text-white shadow-md hover:bg-primary/90"
-              >
-                Solicitar cotizacion
-              </Link>
-              <Link
-                href="/servicios"
-                className="inline-flex min-h-11 items-center justify-center rounded-md border border-white/40 px-6 py-3 text-sm font-bold text-white hover:bg-white/10"
-              >
-                Ver servicios
-              </Link>
+    <main className="ftc-public">
+      <section id="inicio" className="hero" aria-label="Comedor industrial y servicio de catering">
+        <div className="overlay" aria-hidden="true" />
+        <div className="container hero-inner">
+          <h1>
+            Comedor industrial y <br /> servicio de catering en Tijuana
+          </h1>
+          <p>{siteContent.hero.body}</p>
+          <a href="/contacto" className="btn" aria-label="Solicitar cotizacion para comedor industrial en Tijuana">
+            Solicitar cotizacion
+          </a>
+
+          <div className="stats reveal in" aria-label="Indicadores de servicio">
+            <div>
+              <span className="num">500+</span>
+              <span className="label">Comidas diarias</span>
+            </div>
+            <div>
+              <span className="num">10</span>
+              <span className="label">Años de experiencia</span>
+            </div>
+            <div>
+              <span className="num">95%</span>
+              <span className="label">Satisfaccion</span>
             </div>
           </div>
         </div>
+        <video className="hero-bg" autoPlay muted loop playsInline aria-hidden="true">
+          <source src={siteContent.heroVideo} type="video/mp4" />
+          Tu navegador no soporta video HTML5.
+        </video>
       </section>
 
-      <section className="bg-white py-16">
-        <div className="mx-auto grid max-w-7xl gap-8 px-4 sm:px-6 lg:grid-cols-[1fr_1.2fr] lg:px-8">
-          <div>
-            <p className="text-sm font-bold uppercase tracking-wide text-primary">Food The Child</p>
-            <h2 className="mt-2 text-3xl font-bold text-gray-900">{siteContent.about.title}</h2>
-          </div>
-          <div className="space-y-6 text-gray-700">
-            <p className="text-lg">{siteContent.about.body}</p>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div className="rounded-md border border-gray-200 p-4">
-                <h3 className="font-bold text-secondary">Mision</h3>
-                <p className="mt-2 text-sm leading-6">{siteContent.about.mission}</p>
+      <section id="nosotros" className="section">
+        <div className="container">
+          <header className="section-head reveal in">
+            <h2>Quienes somos</h2>
+            <p>{siteContent.about.body}</p>
+          </header>
+
+          <section className="about-section">
+            <div className="about-container">
+              <div className="about-item">
+                <h3 className="about-title">Mision</h3>
+                <p>{siteContent.about.mission}</p>
               </div>
-              <div className="rounded-md border border-gray-200 p-4">
-                <h3 className="font-bold text-secondary">Vision</h3>
-                <p className="mt-2 text-sm leading-6">{siteContent.about.vision}</p>
+              <div className="about-item">
+                <h3 className="about-title">Vision</h3>
+                <p>{siteContent.about.vision}</p>
               </div>
             </div>
-          </div>
+          </section>
+
+          <section className="valores">
+            <h2>Nuestros valores</h2>
+            <div className="valores-grid">
+              <div className="valor-card"><div className="icon"><i className="fa-solid fa-shield-halved" aria-hidden="true" /></div><p>Calidad sin concesiones</p></div>
+              <div className="valor-card"><div className="icon"><i className="fa-solid fa-heart" aria-hidden="true" /></div><p>Pasion por el sabor casero</p></div>
+              <div className="valor-card"><div className="icon"><i className="fa-solid fa-people-group" aria-hidden="true" /></div><p>Servicio centrado en la gente</p></div>
+              <div className="valor-card"><div className="icon"><i className="fa-solid fa-shield" aria-hidden="true" /></div><p>Seguridad e higiene alimentaria</p></div>
+              <div className="valor-card"><div className="icon"><i className="fa-solid fa-eye" aria-hidden="true" /></div><p>Transparencia y honestidad</p></div>
+              <div className="valor-card"><div className="icon"><i className="fa-solid fa-lightbulb" aria-hidden="true" /></div><p>Innovacion continua</p></div>
+              <div className="valor-card"><div className="icon"><i className="fa-solid fa-leaf" aria-hidden="true" /></div><p>Responsabilidad social y ambiental</p></div>
+              <div className="valor-card"><div className="icon"><i className="fa-solid fa-user-check" aria-hidden="true" /></div><p>Trabajo en equipo</p></div>
+            </div>
+          </section>
         </div>
       </section>
 
-      <section className="bg-gray-50 py-16">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="max-w-3xl">
-            <h2 className="text-3xl font-bold text-gray-900">Servicios</h2>
-            <p className="mt-3 text-gray-600">{siteContent.servicesIntro}</p>
-          </div>
-          <div className="mt-8 grid gap-6 md:grid-cols-3">
+      <section id="servicios" className="section alt">
+        <div className="container">
+          <header className="section-head reveal in">
+            <h2>Servicios</h2>
+            <p>{siteContent.servicesIntro}</p>
+          </header>
+
+          <div className="grid-3">
             {siteContent.services.map((service) => (
-              <article key={service.title} className="overflow-hidden rounded-md border border-gray-200 bg-white shadow-sm">
-                <img src={service.image} alt={service.alt} className="h-52 w-full object-cover" />
-                <div className="p-5">
-                  <h3 className="text-xl font-bold text-secondary">{service.title}</h3>
-                  <p className="mt-2 text-sm leading-6 text-gray-600">{service.body}</p>
-                </div>
+              <article key={service.title} className="service reveal in">
+                <img src={service.image} alt={service.alt} loading="lazy" decoding="async" />
+                <h3>{service.title}</h3>
+                <p>{service.body}</p>
               </article>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="bg-secondary py-14 text-white">
-        <div className="mx-auto grid max-w-7xl gap-8 px-4 sm:px-6 lg:grid-cols-[1fr_auto] lg:items-center lg:px-8">
-          <div>
-            <h2 className="text-3xl font-bold">Sabor casero a gran escala para impulsar la energia de tu equipo.</h2>
-            <p className="mt-3 text-white/80">
-              Pide una cotizacion de comedor industrial en Tijuana o servicio de catering.
-            </p>
-          </div>
-          <Link
-            href="/contacto"
-            className="inline-flex min-h-11 items-center justify-center rounded-md bg-primary px-6 py-3 text-sm font-bold text-white hover:bg-primary/90"
-          >
-            Contactar
-          </Link>
+      <section className="section">
+        <div className="container">
+          <h2>Preguntas frecuentes</h2>
+          {siteContent.faq.map((item) => (
+            <details key={item.question}>
+              <summary>{item.question}</summary>
+              <p>{item.answer}</p>
+            </details>
+          ))}
         </div>
       </section>
+      <FoodTheChildFooter />
     </main>
   );
 }
